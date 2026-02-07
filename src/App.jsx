@@ -8,6 +8,22 @@ const heart = confetti.shapeFromText({ text: "❤", scalar: 2 });
 /* EXACT 14 FEB 12:00 AM INDIA TIME (UTC FIXED FOR VERCEL) */
 const UNLOCK_DATE = new Date(Date.UTC(2026, 1, 13, 18, 30, 0));
 
+/* ---------- SECRET TEST MODE (DO NOT REMOVE) ---------- */
+const params = new URLSearchParams(window.location.search);
+const testMode = params.get("test");
+
+let EFFECTIVE_UNLOCK_DATE = UNLOCK_DATE;
+
+if (testMode === "valentine") {
+  // simulate already unlocked
+  EFFECTIVE_UNLOCK_DATE = new Date(Date.now() - 10000);
+}
+
+if (testMode === "countdown") {
+  // simulate still locked
+  EFFECTIVE_UNLOCK_DATE = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+}
+
 const CORRECT_PASSWORD = "26022025 and 09092025";
 
 export default function Page() {
@@ -34,7 +50,7 @@ export default function Page() {
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
-      const diff = UNLOCK_DATE - now;
+      const diff = EFFECTIVE_UNLOCK_DATE - now;
 
       if (diff <= 0) {
         setTimeLeft("It's time Meow 😍");
@@ -56,7 +72,7 @@ export default function Page() {
   const tryUnlockCountdown = () => {
     const now = new Date();
 
-    if (now >= UNLOCK_DATE) {
+    if (now >= EFFECTIVE_UNLOCK_DATE) {
       confetti({
         particleCount: 150,
         spread: 120,
